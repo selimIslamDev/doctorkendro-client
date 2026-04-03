@@ -1,5 +1,6 @@
 'use client'
 
+import { use } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { doctorService } from '@/services/doctor.service'
 import { reviewService } from '@/services/review.service'
@@ -8,28 +9,29 @@ import Badge from '@/components/ui/Badge'
 import Avatar from '@/components/ui/Avatar'
 import Spinner from '@/components/ui/Spinner'
 import Button from '@/components/ui/Button'
-import { Star, MapPin, Video, Phone, Award, GraduationCap, Clock } from 'lucide-react'
+import { Star, MapPin, Video, Phone, GraduationCap, Clock } from 'lucide-react'
 import { formatCurrency } from '@/utils'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '@/config'
 
 interface Props {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default function DoctorProfilePage({ params }: Props) {
+  const { id } = use(params)
   const { isAuthenticated } = useAuth()
   const router = useRouter()
 
   const { data: doctorData, isLoading } = useQuery({
-    queryKey: ['doctor', params.id],
-    queryFn: () => doctorService.getDoctorProfile(params.id),
+    queryKey: ['doctor', id],
+    queryFn: () => doctorService.getDoctorProfile(id),
   })
 
   const { data: reviewsData } = useQuery({
-    queryKey: ['doctor-reviews', params.id],
-    queryFn: () => reviewService.getDoctorReviews(params.id),
+    queryKey: ['doctor-reviews', id],
+    queryFn: () => reviewService.getDoctorReviews(id),
   })
 
   const doctor = doctorData?.data
@@ -78,14 +80,11 @@ export default function DoctorProfilePage({ params }: Props) {
                     <h1 className="text-2xl font-bold text-gray-900">
                       Dr. {doctor.firstName} {doctor.lastName}
                     </h1>
-                    {doctor.specializations &&
-                      doctor.specializations.length > 0 && (
-                        <p className="text-blue-600 font-medium">
-                          {doctor.specializations
-                            .map((s) => s.specialization.name)
-                            .join(', ')}
-                        </p>
-                      )}
+                    {doctor.specializations && doctor.specializations.length > 0 && (
+                      <p className="text-blue-600 font-medium">
+                        {doctor.specializations.map((s) => s.specialization.name).join(', ')}
+                      </p>
+                    )}
                     {doctor.experience && (
                       <p className="text-gray-500 text-sm mt-1">
                         {doctor.experience} years of experience
@@ -100,30 +99,21 @@ export default function DoctorProfilePage({ params }: Props) {
                   {doctor.avgRating > 0 && (
                     <div className="text-center">
                       <div className="flex items-center gap-1">
-                        <Star
-                          size={18}
-                          className="text-yellow-400 fill-yellow-400"
-                        />
+                        <Star size={18} className="text-yellow-400 fill-yellow-400" />
                         <span className="text-xl font-bold text-gray-900">
                           {doctor.avgRating.toFixed(1)}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400">
-                        {doctor.totalReviews} reviews
-                      </p>
+                      <p className="text-xs text-gray-400">{doctor.totalReviews} reviews</p>
                     </div>
                   )}
                   <div className="text-center">
-                    <p className="text-xl font-bold text-gray-900">
-                      {doctor.totalPatients}
-                    </p>
+                    <p className="text-xl font-bold text-gray-900">{doctor.totalPatients}</p>
                     <p className="text-xs text-gray-400">Patients</p>
                   </div>
                   {doctor.experience && (
                     <div className="text-center">
-                      <p className="text-xl font-bold text-gray-900">
-                        {doctor.experience}+
-                      </p>
+                      <p className="text-xl font-bold text-gray-900">{doctor.experience}+</p>
                       <p className="text-xs text-gray-400">Years</p>
                     </div>
                   )}
@@ -143,9 +133,7 @@ export default function DoctorProfilePage({ params }: Props) {
                   <h2 className="font-semibold text-gray-900">About</h2>
                 </CardHeader>
                 <CardBody>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {doctor.about}
-                  </p>
+                  <p className="text-gray-600 text-sm leading-relaxed">{doctor.about}</p>
                 </CardBody>
               </Card>
             )}
@@ -156,9 +144,7 @@ export default function DoctorProfilePage({ params }: Props) {
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <GraduationCap size={20} className="text-blue-600" />
-                    <h2 className="font-semibold text-gray-900">
-                      Qualifications
-                    </h2>
+                    <h2 className="font-semibold text-gray-900">Qualifications</h2>
                   </div>
                 </CardHeader>
                 <CardBody>
@@ -167,9 +153,7 @@ export default function DoctorProfilePage({ params }: Props) {
                       <div key={qual.id} className="flex items-start gap-3">
                         <div className="w-2 h-2 rounded-full bg-blue-600 mt-2 flex-shrink-0" />
                         <div>
-                          <p className="font-medium text-gray-900">
-                            {qual.degree}
-                          </p>
+                          <p className="font-medium text-gray-900">{qual.degree}</p>
                           <p className="text-sm text-gray-500">
                             {qual.institution}
                             {qual.year && ` — ${qual.year}`}
@@ -195,13 +179,8 @@ export default function DoctorProfilePage({ params }: Props) {
                 <CardBody>
                   <div className="flex flex-col gap-4">
                     {doctor.clinics.map((clinic) => (
-                      <div
-                        key={clinic.id}
-                        className="p-4 bg-gray-50 rounded-xl"
-                      >
-                        <p className="font-medium text-gray-900">
-                          {clinic.clinicName}
-                        </p>
+                      <div key={clinic.id} className="p-4 bg-gray-50 rounded-xl">
+                        <p className="font-medium text-gray-900">{clinic.clinicName}</p>
                         <p className="text-sm text-gray-500 mt-1">
                           {clinic.address}, {clinic.city}
                         </p>
@@ -229,37 +208,28 @@ export default function DoctorProfilePage({ params }: Props) {
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <Star size={20} className="text-yellow-400" />
-                    <h2 className="font-semibold text-gray-900">
-                      Patient Reviews
-                    </h2>
+                    <h2 className="font-semibold text-gray-900">Patient Reviews</h2>
                   </div>
                 </CardHeader>
                 <CardBody>
                   <div className="flex flex-col gap-4">
                     {reviews.map((review) => (
-                      <div
-                        key={review.id}
-                        className="p-4 bg-gray-50 rounded-xl"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-1">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <Star
-                                key={i}
-                                size={14}
-                                className={
-                                  i < review.rating
-                                    ? 'text-yellow-400 fill-yellow-400'
-                                    : 'text-gray-300'
-                                }
-                              />
-                            ))}
-                          </div>
+                      <div key={review.id} className="p-4 bg-gray-50 rounded-xl">
+                        <div className="flex items-center gap-1 mb-2">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              size={14}
+                              className={
+                                i < review.rating
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-gray-300'
+                              }
+                            />
+                          ))}
                         </div>
                         {review.comment && (
-                          <p className="text-sm text-gray-600">
-                            {review.comment}
-                          </p>
+                          <p className="text-sm text-gray-600">{review.comment}</p>
                         )}
                       </div>
                     ))}
@@ -299,11 +269,7 @@ export default function DoctorProfilePage({ params }: Props) {
                   </div>
                 )}
 
-                <Button
-                  className="w-full"
-                  size="lg"
-                  onClick={handleBookAppointment}
-                >
+                <Button className="w-full" size="lg" onClick={handleBookAppointment}>
                   Book Appointment
                 </Button>
 
@@ -349,4 +315,3 @@ export default function DoctorProfilePage({ params }: Props) {
     </div>
   )
 }
-
