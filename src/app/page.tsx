@@ -1,3 +1,6 @@
+// import Navbar from "@/components/common/Navbar";
+import Footer from "@/components/common/Footer/Footer";
+import Navbar from "@/components/common/Navbar/Navbar";
 import AdviceBanner from "@/components/Home/AdviceBanner/AdviceBanner";
 import DiseasesSection from "@/components/Home/DiseasesSection/DiseasesSection";
 import DoctorByCity from "@/components/Home/DoctorByCity/DoctorByCity";
@@ -15,6 +18,7 @@ import React from "react";
 const Home = () => {
   return (
     <div>
+      <Navbar></Navbar>
       <HeroSearch></HeroSearch>
       <ServiceGrid></ServiceGrid>
       <AdviceBanner></AdviceBanner>
@@ -26,6 +30,7 @@ const Home = () => {
       <WhyMarham></WhyMarham>
       <PartnerSlider></PartnerSlider>
       <DoctorByCity></DoctorByCity>
+      <Footer></Footer>
     </div>
   );
 };
