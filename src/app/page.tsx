@@ -11,7 +11,7 @@ import PartnerSlider from "@/components/Home/PartnerSlider/PartnerSlider";
 import ReviewSlider from "@/components/Home/ReviewSlider/ReviewSlider";
 import ServiceGrid from "@/components/Home/ServiceGrid/ServiceGrid";
 import SymptomsSection from "@/components/Home/SymptomsSection/SymptomsSection";
-import WhyMarham from "@/components/Home/WhyMarham/WhyMarham";
+import WhyMarham from "@/components/Home/WhyDoctorKendro/WhyDoctorKendro";
 // import Navbar from "@/components/layouts/Navbar/Navbar";
 import React from "react";
 
